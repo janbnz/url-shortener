@@ -7,16 +7,21 @@ import java.util.concurrent.Executors;
 
 public class SqlDatabase {
 
+    // The database file is in the current working directory with the name "database.db"
     private static final String DB_URL = "jdbc:sqlite:database.db";
 
     private Connection connection;
-
     private final ExecutorService executorService;
 
     public SqlDatabase() {
         this.executorService = Executors.newFixedThreadPool(1);
     }
 
+    /**
+     * Connects to the SQLite database
+     *
+     * @return CompletableFuture<Void> indicating the completion of the connect operation
+     */
     public CompletableFuture<Void> connect() {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -27,6 +32,11 @@ public class SqlDatabase {
         });
     }
 
+    /**
+     * Disconnects from the SQLite database
+     *
+     * @return CompletableFuture<Void> indicating the completion of the disconnect operation
+     */
     public CompletableFuture<Void> disconnect() {
         return CompletableFuture.runAsync(() -> {
             try {
@@ -39,6 +49,11 @@ public class SqlDatabase {
         });
     }
 
+    /**
+     * Executes an SQLite update
+     *
+     * @return CompletableFuture<Void> indicating the completion of the update operation
+     */
     public CompletableFuture<Void> executeUpdate(String sql, Object... params) {
         return CompletableFuture.runAsync(() -> {
             try (PreparedStatement statement = prepareStatementWithParams(sql, params)) {
@@ -49,6 +64,11 @@ public class SqlDatabase {
         });
     }
 
+    /**
+     * Queries from the SQLite database
+     *
+     * @return CompletableFuture<ResultSet> representing the result of the query
+     */
     public CompletableFuture<ResultSet> executeQuery(String sql, Object... params) {
         return CompletableFuture.supplyAsync(() -> {
             try {
@@ -64,15 +84,19 @@ public class SqlDatabase {
         }, executorService);
     }
 
+    /**
+     * Creates a PreparedStatement with parameters
+     *
+     * @param sql    the SQL query string
+     * @param params the parameters to be set in the PreparedStatement
+     * @return the prepared statement
+     * @throws SQLException if a database access error occurs
+     */
     private PreparedStatement prepareStatementWithParams(String sql, Object... params) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(sql);
         for (int i = 0; i < params.length; i++) {
             statement.setObject(i + 1, params[i]);
         }
         return statement;
-    }
-
-    public Connection getConnection() {
-        return connection;
     }
 }

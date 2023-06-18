@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * The RestServer class extends NanoHTTPD to create a simple HTTP server.
- * It listens on port 8690 and handles incoming requests.
+ * It listens on port 8590 and handles incoming requests.
  */
 public class RestServer extends NanoHTTPD {
 
@@ -62,6 +62,12 @@ public class RestServer extends NanoHTTPD {
         return newFixedLengthResponse(new JSONObject("response", "Please provide a valid action").toString());
     }
 
+    /**
+     * Create a shortened url
+     *
+     * @param body the HTTP request body
+     * @return a HTTP response
+     */
     private Response createUrl(JSONObject body) {
         String originalURL = body.getString("url");
 
@@ -73,6 +79,12 @@ public class RestServer extends NanoHTTPD {
         }).join();
     }
 
+    /**
+     * Redirect to the original url
+     *
+     * @param uri the shortened url
+     * @return a HTTP response
+     */
     private Response redirect(String uri) {
         CompletableFuture<Response> futureResponse = this.service.createRedirect(uri).thenApplyAsync(originalURL -> {
             if (originalURL != null) {
@@ -86,6 +98,12 @@ public class RestServer extends NanoHTTPD {
         return futureResponse.join();
     }
 
+    /**
+     * Show stats of the shortened url
+     *
+     * @param shortenedURL the shortened url
+     * @return stats like the amount of redirects and the original url
+     */
     private Response getStats(String shortenedURL) {
         CompletableFuture<Response> futureResponse = this.service.getInformation(shortenedURL).thenApplyAsync(information -> {
             if (information == null) {
@@ -98,6 +116,12 @@ public class RestServer extends NanoHTTPD {
         return futureResponse.join();
     }
 
+    /**
+     * Returns the body of a NanoHTTPD session
+     *
+     * @param session the NanoHTTPD session
+     * @return the body as json
+     */
     private JSONObject getBody(IHTTPSession session) {
         final HashMap<String, String> map = new HashMap<>();
         try {
