@@ -12,7 +12,8 @@ This is a simple URL shortener project built in Java. It uses the NanoHTTPD libr
 This command sends a POST request to the `/api/create` endpoint with the original URL as JSON data. The server will generate a short URL for the provided URL.
 
 ```bash
-curl --location 'http://localhost:8590/api/create' \ --header 'Content-Type: application/json' \
+curl --location 'http://localhost:8590/api/create' \
+--header 'Content-Type: application/json' \
 --data '{"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}'
 ```
 
