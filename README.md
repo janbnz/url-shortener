@@ -1,6 +1,9 @@
 # url-shortener
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](http://unlicense.org/)
 
-This is a simple URL shortener project built in Java. It uses the NanoHTTPD HTTP library to handle RESTful API requests and shorten URLs. The project uses a SQLite database to store information about the URLs.
+## Description
+
+This is a simple URL shortener project built in Java. It uses the NanoHTTPD library to handle RESTful API requests and shorten URLs. The project uses a SQLite database to store information about the URLs.
 
 ## Usage
 
@@ -26,10 +29,14 @@ Make sure to replace `tQYC5b` with the actual short URL code.
 curl --location 'http://localhost:8590/api/stats/tQYC5b'
 ```
 
+The response will look like this
+```json
+{"original_url":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","redirects":0,"shortened_url":"tQYC5b"}
+```
+
 ### Accessing Shortened URLs
 
 Once a URL is shortened, you can access it using the shortened URL itself, for example:
-Make sure to replace `tQYC5b` with the actual short URL code.
 
 ```bash
 http://localhost:8590/tQYC5b
@@ -37,7 +44,7 @@ http://localhost:8590/tQYC5b
 
 ## Future Features
 
-Some potential future features for this URL shortener project could include implementing authorization.
+Some potential future features for this project could include implementing authorization.
 
 ## Libraries
 
@@ -46,3 +53,7 @@ This project uses the following libraries:
 - json
 - NanoHTTPD
 - SQLite
+
+## License
+
+This project is licensed under the [Unlicense](http://unlicense.org/)
