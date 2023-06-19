@@ -37,7 +37,7 @@ The response will look like this
 
 ### Accessing Shortened URLs
 
-Once a URL is shortened, you can access it using the shortened URL itself, for example:
+Once a URL is shortened, you can access it using the shortened URL, for example:
 
 ```bash
 http://localhost:8590/tQYC5b
