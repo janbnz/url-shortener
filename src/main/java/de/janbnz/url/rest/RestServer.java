@@ -1,6 +1,8 @@
 package de.janbnz.url.rest;
 
 import de.janbnz.url.database.SqlDatabase;
+import de.janbnz.url.generator.AlphaNumericCodeGenerator;
+import de.janbnz.url.generator.ShortCodeGenerator;
 import de.janbnz.url.service.ShorteningService;
 import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONObject;
@@ -24,7 +26,9 @@ public class RestServer extends NanoHTTPD {
      */
     public RestServer(SqlDatabase database) throws IOException {
         super(8590);
-        this.service = new ShorteningService(database);
+
+        final ShortCodeGenerator codeGenerator = new ShortCodeGenerator(new AlphaNumericCodeGenerator());
+        this.service = new ShorteningService(database, codeGenerator::generateShortCode);
         this.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
         System.out.println("\nRunning! Point your browsers to http://localhost:8590/ \n");
     }

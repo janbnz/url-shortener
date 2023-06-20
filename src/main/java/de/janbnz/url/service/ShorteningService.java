@@ -1,18 +1,20 @@
 package de.janbnz.url.service;
 
 import de.janbnz.url.database.SqlDatabase;
-import de.janbnz.url.generator.ShortCodeGenerator;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 public class ShorteningService {
 
     private final SqlDatabase database;
+    private final Supplier<String> codeSupplier;
 
-    public ShorteningService(SqlDatabase database) {
+    public ShorteningService(SqlDatabase database, Supplier<String> codeSupplier) {
         this.database = database;
+        this.codeSupplier = codeSupplier;
     }
 
     /**
@@ -73,7 +75,7 @@ public class ShorteningService {
      * @return a unique short code
      */
     private CompletableFuture<String> generateUniqueShortCode() {
-        return CompletableFuture.supplyAsync(ShortCodeGenerator::generateShortCode).thenComposeAsync(code -> isCodeExisting(code)
+        return CompletableFuture.supplyAsync(this.codeSupplier).thenComposeAsync(code -> isCodeExisting(code)
                 .thenComposeAsync(codeExists -> codeExists ? generateUniqueShortCode() : CompletableFuture.completedFuture(code)));
     }
 
