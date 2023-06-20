@@ -2,7 +2,6 @@ package de.janbnz.url.service;
 
 import de.janbnz.url.database.SqlDatabase;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -57,14 +56,12 @@ public class ShorteningService {
     public CompletableFuture<ShortenedURL> getInformation(String shortenedURL) {
         String sql = "SELECT * FROM urls WHERE shortened_url = ?";
         return database.executeQuery(sql, shortenedURL).thenApplyAsync(resultSet -> {
-            try {
+            try (resultSet) {
                 if (resultSet == null || !resultSet.next()) return null;
                 return new ShortenedURL(resultSet.getString("original_url"), shortenedURL, resultSet.getInt("redirects"));
             } catch (SQLException e) {
                 e.printStackTrace();
                 return null;
-            } finally {
-                this.closeResultSet(resultSet);
             }
         });
     }
@@ -88,30 +85,14 @@ public class ShorteningService {
     private CompletableFuture<Boolean> isCodeExisting(String code) {
         String sql = "SELECT COUNT(*) FROM urls WHERE shortened_url = ?";
         return database.executeQuery(sql, code).thenApplyAsync(resultSet -> {
-            try {
+            try (resultSet) {
                 if (resultSet == null || !resultSet.next()) return false;
                 int count = resultSet.getInt(1);
                 return count > 0;
             } catch (SQLException e) {
                 e.printStackTrace();
-            } finally {
-                this.closeResultSet(resultSet);
             }
             return false;
         });
-    }
-
-    /**
-     * Closes a ResultSet
-     *
-     * @param resultSet the ResultSet
-     */
-    private void closeResultSet(ResultSet resultSet) {
-        if (resultSet == null) return;
-        try {
-            resultSet.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
     }
 }
