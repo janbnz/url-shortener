@@ -20,6 +20,9 @@ public class ServiceConfig {
         return properties;
     }
 
+    /**
+     * Loads the config properties
+     */
     private void load() {
         final String configFileName = "config.properties";
         Path configPath = Path.of(configFileName);
@@ -35,6 +38,12 @@ public class ServiceConfig {
         }
     }
 
+    /**
+     * Copies the default config to a specific destination
+     *
+     * @param configFileName the config file name in the maven resources directory
+     * @param configPath     the destination path
+     */
     private void copyFileFromResources(String configFileName, Path configPath) {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(configFileName)) {
             if (input == null) {
