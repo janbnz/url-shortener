@@ -44,16 +44,14 @@ public class RestServer extends NanoHTTPD {
         final String uri = session.getUri();
 
         switch (session.getMethod()) {
-            case POST: {
+            case POST -> {
                 final JSONObject body = this.getBody(session);
 
                 if (uri.equals("/api/create")) {
                     return this.createUrl(body);
                 }
-                break;
             }
-
-            case GET: {
+            case GET -> {
                 if (uri.startsWith("/api/stats/")) {
                     String shortenedURL = uri.substring("/api/stats/".length());
                     return this.getStats(shortenedURL);
@@ -114,7 +112,7 @@ public class RestServer extends NanoHTTPD {
                 return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_HTML, "URL not found");
             }
             String responseText = new JSONObject().put("original_url", information.getOriginalURL())
-                    .put("shortened_url", information.getShortenedURL()).put("redirects", information.getRedirects()).toString();
+                    .put("shortened_url", shortenedURL).put("redirects", information.getRedirects()).toString();
             return newFixedLengthResponse(Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, responseText);
         });
         return futureResponse.join();

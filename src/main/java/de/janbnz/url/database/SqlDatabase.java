@@ -1,5 +1,7 @@
 package de.janbnz.url.database;
 
+import de.janbnz.url.config.ServiceConfig;
+
 import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -7,14 +9,14 @@ import java.util.concurrent.Executors;
 
 public class SqlDatabase {
 
-    // The database file is in the current working directory with the name "database.db"
-    private static final String DB_URL = "jdbc:sqlite:database.db";
-
     private Connection connection;
     private final ExecutorService executorService;
 
-    public SqlDatabase() {
+    private final ServiceConfig config;
+
+    public SqlDatabase(ServiceConfig config) {
         this.executorService = Executors.newFixedThreadPool(1);
+        this.config = config;
     }
 
     /**
@@ -25,7 +27,7 @@ public class SqlDatabase {
     public CompletableFuture<Void> connect() {
         return CompletableFuture.runAsync(() -> {
             try {
-                connection = DriverManager.getConnection(DB_URL);
+                connection = DriverManager.getConnection(this.config.getProperties().getProperty("db.url"));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
