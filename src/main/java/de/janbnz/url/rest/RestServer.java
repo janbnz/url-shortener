@@ -4,100 +4,78 @@ import de.janbnz.url.database.SqlDatabase;
 import de.janbnz.url.generator.AlphaNumericCodeGenerator;
 import de.janbnz.url.generator.ShortCodeGenerator;
 import de.janbnz.url.service.ShorteningService;
-import fi.iki.elonen.NanoHTTPD;
+import io.javalin.Javalin;
+import io.javalin.http.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * The RestServer class extends NanoHTTPD to create a simple HTTP server.
- * It listens on port 8590 and handles incoming requests.
- */
-public class RestServer extends NanoHTTPD {
+public class RestServer {
 
     private final ShorteningService service;
 
     /**
      * Creates a new RestServer instance and starts the server.
-     *
-     * @throws IOException if an I/O error occurs while starting the server
      */
-    public RestServer(SqlDatabase database) throws IOException {
-        super(8590);
-
+    public RestServer(int port, SqlDatabase database) {
         final ShortCodeGenerator codeGenerator = new ShortCodeGenerator(new AlphaNumericCodeGenerator());
         this.service = new ShorteningService(database, codeGenerator::generateShortCode);
-        this.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-        System.out.println("\nRunning! Point your browsers to http://localhost:8590/ \n");
+
+        final Javalin app = Javalin.create();
+        app.start(port);
+
+        app.post("/api/create", this.createEndpoint());
+        app.get("/api/stats/{url}", this.statsEndpoint());
+        app.get("/{url}", this.getEndpoint());
     }
 
     /**
-     * Handles incoming HTTP requests
-     *
-     * @param session the HTTP session representing the incoming request
-     * @return the response to the incoming request
+     * Is called when the /api/create endpoint is being requested
      */
-    @Override
-    public Response serve(IHTTPSession session) {
-        final String uri = session.getUri();
+    private Handler createEndpoint() {
+        return ctx -> ctx.future(() -> {
+            final JSONObject body = this.getBody(ctx.body());
+            final String url = this.getJsonString(body, "url");
 
-        switch (session.getMethod()) {
-            case POST -> {
-                final JSONObject body = this.getBody(session);
+            return createUrl(url).thenAcceptAsync(shortenedURL -> {
+                final JSONObject result = new JSONObject().put("url", shortenedURL);
+                ctx.status(HttpStatus.OK).result(result.toString());
+            });
+        });
+    }
 
-                if (uri.equals("/api/create")) {
-                    return this.createUrl(body);
-                }
-            }
-            case GET -> {
-                if (uri.startsWith("/api/stats/")) {
-                    String shortenedURL = uri.substring("/api/stats/".length());
-                    return this.getStats(shortenedURL);
-                } else {
-                    return this.redirect(uri.replaceFirst("/", ""));
-                }
-            }
-        }
+    /**
+     * Is called when the /api/stats/{url} endpoint is being requested
+     */
+    private Handler statsEndpoint() {
+        return ctx -> ctx.future(() -> {
+            final String url = ctx.pathParam("url");
+            return this.getStats(url).thenAcceptAsync(result -> ctx.status(HttpStatus.OK).result(result));
+        });
+    }
 
-        return newFixedLengthResponse(new JSONObject("response", "Please provide a valid action").toString());
+    /**
+     * Is called when the /{name} endpoint is being requested
+     */
+    private Handler getEndpoint() {
+        return ctx -> ctx.future(() -> {
+            final String url = ctx.pathParam("url");
+            return this.redirect(url).thenAcceptAsync(ctx::redirect);
+        });
     }
 
     /**
      * Create a shortened url
      *
-     * @param body the HTTP request body
+     * @param originalURL the original url
      * @return a HTTP response
      */
-    private Response createUrl(JSONObject body) {
-        String originalURL = body.getString("url");
-
-        CompletableFuture<String> shortenedURLFuture = this.service.createURL(originalURL);
-
-        return shortenedURLFuture.thenApplyAsync(shortenedURL -> {
-            String responseText = new JSONObject().put("url", shortenedURL).toString();
-            return newFixedLengthResponse(Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, responseText);
-        }).join();
-    }
-
-    /**
-     * Redirect to the original url
-     *
-     * @param uri the shortened url
-     * @return a HTTP response
-     */
-    private Response redirect(String uri) {
-        CompletableFuture<Response> futureResponse = this.service.createRedirect(uri).thenApplyAsync(originalURL -> {
-            if (originalURL != null) {
-                Response response = newFixedLengthResponse(Response.Status.REDIRECT, NanoHTTPD.MIME_HTML, "");
-                response.addHeader("Location", originalURL);
-                return response;
-            } else {
-                return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_HTML, "URL not found");
-            }
+    private CompletableFuture<String> createUrl(String originalURL) {
+        return this.service.createURL(originalURL).thenApplyAsync(shortenedURL -> {
+            if (shortenedURL == null) throw new InternalServerErrorResponse("Error while shorting url");
+            return shortenedURL;
         });
-        return futureResponse.join();
     }
 
     /**
@@ -106,31 +84,51 @@ public class RestServer extends NanoHTTPD {
      * @param shortenedURL the shortened url
      * @return stats like the amount of redirects and the original url
      */
-    private Response getStats(String shortenedURL) {
-        CompletableFuture<Response> futureResponse = this.service.getInformation(shortenedURL).thenApplyAsync(information -> {
-            if (information == null) {
-                return newFixedLengthResponse(Response.Status.NOT_FOUND, NanoHTTPD.MIME_HTML, "URL not found");
-            }
-            String responseText = new JSONObject().put("original_url", information.getOriginalURL())
-                    .put("shortened_url", shortenedURL).put("redirects", information.getRedirects()).toString();
-            return newFixedLengthResponse(Response.Status.OK, NanoHTTPD.MIME_PLAINTEXT, responseText);
+    private CompletableFuture<String> getStats(String shortenedURL) {
+        return this.service.getInformation(shortenedURL).thenApplyAsync(information -> {
+            if (information == null) throw new BadRequestResponse("URL not found");
+
+            return new JSONObject().put("original_url", information.originalURL())
+                    .put("shortened_url", shortenedURL).put("redirects", information.redirects()).toString();
         });
-        return futureResponse.join();
+    }
+
+    /**
+     * Redirect to the original url
+     *
+     * @param uri the shortened url
+     * @return a HTTP response
+     */
+    private CompletableFuture<String> redirect(String uri) {
+        return this.service.createRedirect(uri).thenApplyAsync(originalURL -> {
+            if (originalURL == null) throw new BadRequestResponse("URL not found");
+            return originalURL;
+        });
     }
 
     /**
      * Returns the body of a NanoHTTPD session
      *
-     * @param session the NanoHTTPD session
-     * @return the body as json
+     * @param body The request body
+     * @return the body as json object
      */
-    private JSONObject getBody(IHTTPSession session) {
-        final HashMap<String, String> map = new HashMap<>();
+    private JSONObject getBody(String body) {
         try {
-            session.parseBody(map);
-        } catch (IOException | ResponseException e) {
-            throw new RuntimeException(e);
+            return new JSONObject(body);
+        } catch (JSONException ex) {
+            throw new NotAcceptableResponse("Body is not a json string");
         }
-        return new JSONObject(map.get("postData"));
+    }
+
+    /**
+     * Returns the value of a specific key in a json object or throws an exception if not existing
+     *
+     * @param json The json object
+     * @param key  The key
+     * @return The value
+     */
+    private String getJsonString(JSONObject json, String key) {
+        if (!json.has(key)) throw new NotAcceptableResponse("Please specify \"" + key + "\"");
+        return json.getString(key);
     }
 }

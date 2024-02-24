@@ -41,7 +41,7 @@ public class ShorteningService {
                 return CompletableFuture.completedFuture(null);
             }
 
-            final String originalURL = information.getOriginalURL();
+            final String originalURL = information.originalURL();
             String sql = "UPDATE urls SET redirects = redirects + 1 WHERE shortened_url = ?";
             return database.executeUpdate(sql, shortenedURL).thenApply(result -> originalURL);
         });
