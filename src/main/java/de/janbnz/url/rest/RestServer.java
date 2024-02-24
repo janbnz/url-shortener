@@ -1,5 +1,6 @@
 package de.janbnz.url.rest;
 
+import de.janbnz.url.auth.AuthenticationProvider;
 import de.janbnz.url.database.SqlDatabase;
 import de.janbnz.url.generator.AlphaNumericCodeGenerator;
 import de.janbnz.url.generator.ShortCodeGenerator;
@@ -18,7 +19,7 @@ public class RestServer {
     /**
      * Creates a new RestServer instance and starts the server.
      */
-    public RestServer(int port, SqlDatabase database) {
+    public RestServer(int port, SqlDatabase database, AuthenticationProvider authProvider) {
         final ShortCodeGenerator codeGenerator = new ShortCodeGenerator(new AlphaNumericCodeGenerator());
         this.service = new ShorteningService(database, codeGenerator::generateShortCode);
 

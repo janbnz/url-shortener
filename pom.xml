@@ -22,9 +22,15 @@
         </dependency>
 
         <dependency>
+            <groupId>com.github.kmehrunes</groupId>
+            <artifactId>javalin-jwt</artifactId>
+            <version>0.7.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20230227</version>
+            <version>20240205</version>
         </dependency>
 
         <dependency>
@@ -37,6 +43,12 @@
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
             <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
         </dependency>
     </dependencies>
 
