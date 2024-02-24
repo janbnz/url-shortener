@@ -52,7 +52,7 @@ Some potential future features for this project could include implementing autho
 This project uses the following libraries:
 
 - json
-- NanoHTTPD
+- Javalin
 - SQLite
 
 ## License
