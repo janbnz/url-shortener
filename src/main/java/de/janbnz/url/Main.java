@@ -5,7 +5,6 @@ import de.janbnz.url.auth.Encryption;
 import de.janbnz.url.database.SqlDatabase;
 import de.janbnz.url.rest.RestServer;
 import io.github.cdimascio.dotenv.Dotenv;
-import org.mindrot.jbcrypt.BCrypt;
 
 public class Main {
 
@@ -17,8 +16,9 @@ public class Main {
         database.executeUpdate("CREATE TABLE IF NOT EXISTS urls(original_url varchar(150), shortened_url varchar(10), redirects int);").join();
 
         final Encryption encryption = new Encryption(dotenv.get("salt"));
+        final String jwtSecret = dotenv.get("jwtSecret");
 
-        final AuthenticationProvider authProvider = new AuthenticationProvider(encryption, database);
+        final AuthenticationProvider authProvider = new AuthenticationProvider(encryption, jwtSecret, database);
         new RestServer(8020, database, authProvider);
     }
 }

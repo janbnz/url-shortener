@@ -10,10 +10,12 @@ public class AuthenticationProvider {
 
     private final Encryption encryption;
     private final SqlDatabase database;
+    private final Authentication authentication;
 
-    public AuthenticationProvider(Encryption encryption, SqlDatabase database) {
+    public AuthenticationProvider(Encryption encryption, String jwtSecret, SqlDatabase database) {
         this.encryption = encryption;
         this.database = database;
+        this.authentication = new Authentication(jwtSecret);
 
         final String sql = "CREATE TABLE IF NOT EXISTS users(" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -60,5 +62,9 @@ public class AuthenticationProvider {
                 }
             });
         }).thenCompose(Function.identity());
+    }
+
+    public Authentication getAuthentication() {
+        return authentication;
     }
 }
