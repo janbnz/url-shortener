@@ -1,7 +1,5 @@
 package de.janbnz.url.database;
 
-import de.janbnz.url.config.ServiceConfig;
-
 import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -12,11 +10,11 @@ public class SqlDatabase {
     private Connection connection;
     private final ExecutorService executorService;
 
-    private final ServiceConfig config;
+    private final String url;
 
-    public SqlDatabase(ServiceConfig config) {
+    public SqlDatabase(String url) {
         this.executorService = Executors.newFixedThreadPool(1);
-        this.config = config;
+        this.url = url;
     }
 
     /**
@@ -27,7 +25,7 @@ public class SqlDatabase {
     public CompletableFuture<Void> connect() {
         return CompletableFuture.runAsync(() -> {
             try {
-                connection = DriverManager.getConnection(this.config.getProperties().getProperty("db.url"));
+                connection = DriverManager.getConnection(url);
             } catch (SQLException e) {
                 e.printStackTrace();
             }
