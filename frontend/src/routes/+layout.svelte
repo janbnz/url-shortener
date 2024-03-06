@@ -4,6 +4,15 @@
 
 <slot />
 
+<script lang="ts">
+	import { loadToken } from '../stores/userStore';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		loadToken();
+	});
+</script>
+
 <style>
 	:global(body) {
 		background-color: #1e2024;
