@@ -11,6 +11,10 @@
 
 	<Nav class="ms-auto" navbar>
 		<NavItem>
+			<NavLink href="/stats">Stats</NavLink>
+		</NavItem>
+
+		<NavItem>
 			{#if loginState}
 				<NavLink href="/" on:click={logout}>Logout</NavLink>
 			{:else}

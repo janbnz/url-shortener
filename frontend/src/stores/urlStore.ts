@@ -31,6 +31,34 @@ export function createUrl(originalURL: string): Promise<string> {
     });
 }
 
+export function getStats(shortenedURL: string): Promise<StatsResponse> {
+    const headers = new Headers({
+        'Authorization': `Bearer ${userStore.getToken()}`
+    });
+
+    return new Promise((resolve, reject) => {
+        fetch(new Request(BASE_URL + "/api/stats/" + shortenedURL, {
+            method: 'GET',
+            headers: headers
+        })).then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error(response.statusText);
+            }
+        }).then(data => {
+            resolve(data as StatsResponse);
+        }).catch(error => {
+            console.error("Error:", error);
+            reject(error.message);
+        });
+    });
+}
+
+interface StatsResponse {
+    original_url: string;
+    redirects: number;
+}
 
 export default {
 
