@@ -63,7 +63,15 @@ Once a URL is shortened, you can access it using the shortened URL, for example:
 http://localhost:8020/tQYC5b
 ```
 
-## Screenshots
+## Frontend
+
+To launch the frontend run the following command in the frontend directory
+```bash
+npm run dev -- --open
+```
+
+### Screenshots
+
 ![Home](https://github.com/janbnz/url-shortener/assets/23404813/7f7cccb7-6c3c-42b8-b34b-425fd7c3c3e1)
 
 ![Stats](https://github.com/janbnz/url-shortener/assets/23404813/027a5cef-9faa-400d-be12-d8cadbf150c4)
