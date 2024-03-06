@@ -1,10 +1,13 @@
 package de.janbnz.url.rest.endpoint;
 
 import io.javalin.http.NotAcceptableResponse;
+import io.javalin.json.JavalinGson;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Endpoint {
+
+    public final JavalinGson gson = new JavalinGson();
 
     /**
      * Returns the body of a NanoHTTPD session
@@ -28,7 +31,7 @@ public class Endpoint {
      * @return The value
      */
     public String getJsonString(JSONObject json, String key) {
-        if (!json.has(key)) throw new NotAcceptableResponse("Please specify \"" + key + "\"");
+        if (!json.has(key)) throw new NotAcceptableResponse("Please specify " + key);
         return json.getString(key);
     }
 }

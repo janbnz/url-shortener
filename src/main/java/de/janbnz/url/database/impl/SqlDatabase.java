@@ -1,6 +1,8 @@
 package de.janbnz.url.database.impl;
 
 import de.janbnz.url.auth.Encryption;
+import de.janbnz.url.auth.user.Role;
+import de.janbnz.url.auth.user.User;
 import de.janbnz.url.database.Database;
 import de.janbnz.url.service.ShortenedURL;
 
@@ -37,7 +39,8 @@ public class SqlDatabase extends Database {
             this.executeUpdate("CREATE TABLE IF NOT EXISTS users(" +
                     "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "username VARCHAR(32) NOT NULL, " +
-                    "password VARCHAR(512) NOT NULL);");
+                    "password VARCHAR(512) NOT NULL," +
+                    "role VARCHAR(32) NOT NULL);");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -89,9 +92,9 @@ public class SqlDatabase extends Database {
     }
 
     @Override
-    public CompletableFuture<Void> registerUser(String username, String encryptedPassword) {
-        final String sql = "INSERT INTO users(id, username, password) VALUES (?, ?, ?);";
-        return this.executeUpdate(sql, null, username, encryptedPassword);
+    public CompletableFuture<Void> registerUser(String username, String encryptedPassword, Role role) {
+        final String sql = "INSERT INTO users(id, username, password, role) VALUES (?, ?, ?, ?);";
+        return this.executeUpdate(sql, null, username, encryptedPassword, role.toString());
     }
 
     @Override
@@ -101,16 +104,19 @@ public class SqlDatabase extends Database {
     }
 
     @Override
-    public CompletableFuture<Boolean> login(String username, String password, Encryption encryption) {
-        final String sql = "SELECT password FROM users WHERE username = ?";
+    public CompletableFuture<User> login(String username, String password, Encryption encryption) {
+        final String sql = "SELECT * FROM users WHERE username = ?";
         return this.executeQuery(sql, username).thenApplyAsync(set -> {
             try (set) {
-                if (set == null || !set.next()) return false;
+                if (set == null || !set.next()) return null;
+
                 final String encryptedPassword = set.getString("password");
-                return encryption.verify(password, encryptedPassword);
+                if (!encryption.verify(password, encryptedPassword)) return null;
+
+                return new User(String.valueOf(set.getInt("id")), set.getString("username"), Role.valueOf(set.getString("role")));
             } catch (SQLException ex) {
                 ex.printStackTrace();
-                return false;
+                return null;
             }
         });
     }

@@ -6,6 +6,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import de.janbnz.url.auth.Encryption;
+import de.janbnz.url.auth.user.Role;
+import de.janbnz.url.auth.user.User;
 import de.janbnz.url.database.Database;
 import de.janbnz.url.service.ShortenedURL;
 import org.bson.Document;
@@ -94,9 +96,9 @@ public class MongoConnection extends Database {
     }
 
     @Override
-    public CompletableFuture<Void> registerUser(String username, String encryptedPassword) {
+    public CompletableFuture<Void> registerUser(String username, String encryptedPassword, Role role) {
         return CompletableFuture.runAsync(() -> {
-            final Document document = new Document().append("username", username).append("password", encryptedPassword);
+            final Document document = new Document().append("username", username).append("password", encryptedPassword).append("role", role.toString());
             this.userCollection.insertOne(document);
         });
     }
@@ -112,15 +114,17 @@ public class MongoConnection extends Database {
     }
 
     @Override
-    public CompletableFuture<Boolean> login(String username, String password, Encryption encryption) {
+    public CompletableFuture<User> login(String username, String password, Encryption encryption) {
         return CompletableFuture.supplyAsync(() -> {
             final Bson filter = Filters.eq("username", username);
 
             final Document document = this.userCollection.find(filter).first();
-            if (document == null) return false;
+            if (document == null) return null;
 
             final String encryptedPassword = document.getString("password");
-            return encryption.verify(password, encryptedPassword);
+            if (!encryption.verify(password, encryptedPassword)) return null;
+
+            return new User(document.getObjectId("_id").toString(), document.getString("username"), Role.valueOf(document.getString("role")));
         });
     }
 }
