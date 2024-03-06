@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Container, Row, Col, Input, Button, Icon, Alert } from '@sveltestrap/sveltestrap';
 	import NavBar from '../../components/NavBar.svelte';
-	import { isLoggedIn, login } from '../../stores/userStore';
+	import { isLoggedIn, register, login } from '../../stores/userStore';
 
 	var loginState: boolean;
 	isLoggedIn.subscribe((value) => (loginState = value));
@@ -26,11 +26,13 @@
 			return;
 		}
 
-		login(usernameValue, passwordValue)
+		register(usernameValue, passwordValue)
 			.then((statusText) => {
                 alertType = "success";
-                alertMessage = "Login successful";
+                alertMessage = "Account registered";
 		        showAlert = true;
+
+				login(usernameValue, passwordValue);
 			})
 			.catch((error) => {
                 alertType = "danger";
@@ -45,7 +47,7 @@
 <Container>
 	<Row>
 		<Col>
-			<h1 id="title"><Icon name="person-fill" /> Login</h1>
+			<h1 id="title"><Icon name="person-fill" /> Register</h1>
 		</Col>
 	</Row>
 
@@ -75,13 +77,13 @@
 
 	<Row class="mt-3">
 		<Col sm="4">
-			<p>No account? <a href="/register">Register here</a></p>
+			<p>Already an account? <a href="/login">Login here</a></p>
 		</Col>
 	</Row>
 
 	<Row>
 		<Col>
-			<Button color="primary" on:click={submit}>Login</Button>
+			<Button color="primary" on:click={submit}>Register</Button>
 		</Col>
 	</Row>
 </Container>

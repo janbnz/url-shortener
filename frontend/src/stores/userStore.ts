@@ -6,19 +6,24 @@ export var token = "";
 
 const BASE_URL = "http://localhost:8020"
 
-export function register(username: string, password: string) {
-    fetch(new Request(BASE_URL + "/api/auth/register", {
-        method: 'POST',
-        body: JSON.stringify({
-            "username": username,
-            "password": password
-        })
-    })).then(response => {
-        if (response.status == 200) {
-            login(username, password);
-        } else {
-            console.log("Error!");
-        }
+export function register(username: string, password: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        fetch(new Request(BASE_URL + "/api/auth/register", {
+            method: 'POST',
+            body: JSON.stringify({
+                "username": username,
+                "password": password
+            })
+        })).then(response => {
+            if (response.ok) {
+                resolve("Register successfull");
+            } else {
+                reject(new Error(response.statusText));
+            }
+        }).catch(error => {
+            console.error(error);
+            reject(error.message);
+        });
     });
 }
 
@@ -40,7 +45,7 @@ export function login(username: string, password: string): Promise<string> {
             token = data.token;
             isLoggedIn.set(true);
             setTimeout(() => goto('/'), 2000);
-            resolve("Login erfolgreich!");
+            resolve("Login successful");
         }).catch(error => {
             console.error("Error:", error);
             reject(error.message);
