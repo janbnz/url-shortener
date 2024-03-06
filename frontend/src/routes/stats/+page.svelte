@@ -21,6 +21,9 @@
 			return;
 		}
 
+		// Remove domain path if existing
+		urlInputValue = urlInputValue.includes('/') ? urlInputValue.substring(urlInputValue.lastIndexOf('/') + 1) : urlInputValue;
+
 		getStats(urlInputValue)
 			.then((response) => {
 				console.log(response);
