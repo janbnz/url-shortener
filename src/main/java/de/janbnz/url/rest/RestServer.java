@@ -13,6 +13,7 @@ import de.janbnz.url.service.ShorteningService;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.UnauthorizedResponse;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 
 public class RestServer {
 
@@ -31,7 +32,11 @@ public class RestServer {
         final ShortCodeGenerator codeGenerator = new ShortCodeGenerator(new AlphaNumericCodeGenerator());
         this.service = new ShorteningService(database, codeGenerator::generateShortCode);
 
-        final Javalin app = Javalin.create();
+        final Javalin app = Javalin.create(config -> {
+            config.bundledPlugins.enableCors(cors -> {
+                cors.addRule(CorsPluginConfig.CorsRule::anyHost);
+            });
+        });
         app.start(port);
 
         // Authentication
