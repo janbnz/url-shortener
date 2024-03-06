@@ -14,6 +14,10 @@ public class Main {
         final SqlDatabase database = new SqlDatabase(dotenv.get("DB_URL"));
         database.connect().join();
         database.executeUpdate("CREATE TABLE IF NOT EXISTS urls(original_url varchar(150), shortened_url varchar(10), redirects int);").join();
+        database.executeUpdate("CREATE TABLE IF NOT EXISTS users(" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "username VARCHAR(32) NOT NULL, " +
+                "password VARCHAR(512) NOT NULL);");
 
         final Encryption encryption = new Encryption(dotenv.get("salt"));
         final String jwtSecret = dotenv.get("jwtSecret");

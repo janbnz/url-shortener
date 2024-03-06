@@ -16,12 +16,6 @@ public class AuthenticationProvider {
         this.encryption = encryption;
         this.database = database;
         this.authentication = new Authentication(jwtSecret);
-
-        final String sql = "CREATE TABLE IF NOT EXISTS users(" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "username VARCHAR(32) NOT NULL, " +
-                "password VARCHAR(512) NOT NULL);";
-        this.database.executeUpdate(sql);
     }
 
     public CompletableFuture<Void> register(String username, String password) {

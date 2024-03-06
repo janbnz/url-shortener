@@ -1,4 +1,4 @@
 package de.janbnz.url.auth.user;
 
-public record User(String name, Role role) {
+public record User(int id, String name, Role role) {
 }

@@ -36,8 +36,8 @@ public class RestServer {
 
         // Authentication
         this.authAPI = new AuthAPI(authProvider);
-        app.post("/api/register", this.authAPI.registerEndpoint(), Role.ANYONE);
-        app.post("/api/login", this.authAPI.loginEndpoint(), Role.ANYONE);
+        app.post("/api/auth/register", this.authAPI.registerEndpoint(), Role.ANYONE);
+        app.post("/api/auth/login", this.authAPI.loginEndpoint(), Role.ANYONE);
 
         // URLs
         this.addressAPI = new AddressAPI(this.service);
