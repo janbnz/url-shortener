@@ -3,9 +3,28 @@
 
 ## Description
 
-This is a simple URL shortener project built in Java. It uses Javalin to handle REST requests. The project uses a SQLite database to store information about the URLs.
+This is a simple URL shortener project built in Java. It uses Javalin to handle REST requests. It stores information about URLs in a database.
+You can currently choose between SQLite, MySQL and MongoDB.
+
+There is also a frontend that is made with [Svelte](https://github.com/sveltejs/svelte).
 
 ## Usage
+
+Users are required to have an account before they can create urls. They will receive an JWT token after logging in.
+
+## Register
+```bash
+curl --location 'http://localhost:8020/api/auth/register' \
+--header 'Content-Type: application/json' \
+--data '{"username": "YOUR_NAME", "password": "YOUR_PASSWORD"}'
+```
+
+## Login
+```bash
+curl --location 'http://localhost:8020/api/auth/login' \
+--header 'Content-Type: application/json' \
+--data '{"username": "YOUR_NAME", "password": "YOUR_PASSWORD"}'
+```
 
 ### Shortening a URL
 
@@ -14,6 +33,7 @@ This command sends a POST request to the `/api/create` endpoint with the origina
 ```bash
 curl --location 'http://localhost:8020/api/create' \
 --header 'Content-Type: application/json' \
+--header 'Authorization: Bearer YOUR_TOKEN_HERE' \
 --data '{"url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"}'
 ```
 
@@ -43,9 +63,12 @@ Once a URL is shortened, you can access it using the shortened URL, for example:
 http://localhost:8020/tQYC5b
 ```
 
-## Future Features
+## Screenshots
+![Home](https://github.com/janbnz/url-shortener/assets/23404813/7f7cccb7-6c3c-42b8-b34b-425fd7c3c3e1)
 
-Some potential future features for this project could include implementing authorization and a web frontend.
+![Stats](https://github.com/janbnz/url-shortener/assets/23404813/027a5cef-9faa-400d-be12-d8cadbf150c4)
+
+![Login](https://github.com/janbnz/url-shortener/assets/23404813/f0207b99-c65f-4b20-b6d1-695ea90f42cd)
 
 ## License
 
