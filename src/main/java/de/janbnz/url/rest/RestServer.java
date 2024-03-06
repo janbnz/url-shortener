@@ -47,7 +47,7 @@ public class RestServer {
         // URLs
         this.addressAPI = new AddressAPI(this.service);
         app.post("/api/create", this.addressAPI.createEndpoint(), Role.USER, Role.ADMIN);
-        app.get("/api/stats/{url}", this.addressAPI.statsEndpoint(), Role.USER, Role.ADMIN);
+        app.get("/api/stats/{url}", this.addressAPI.statsEndpoint());
         app.get("/{url}", this.addressAPI.getEndpoint(), Role.ANYONE);
 
         // Require authentication at some endpoints
