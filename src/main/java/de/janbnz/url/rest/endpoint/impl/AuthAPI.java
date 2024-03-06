@@ -1,6 +1,7 @@
-package de.janbnz.url.rest.endpoint;
+package de.janbnz.url.rest.endpoint.impl;
 
 import de.janbnz.url.auth.AuthenticationProvider;
+import de.janbnz.url.rest.endpoint.Endpoint;
 import io.javalin.http.Handler;
 
 public class AuthAPI extends Endpoint {

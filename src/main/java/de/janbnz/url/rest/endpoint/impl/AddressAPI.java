@@ -1,5 +1,6 @@
-package de.janbnz.url.rest.endpoint;
+package de.janbnz.url.rest.endpoint.impl;
 
+import de.janbnz.url.rest.endpoint.Endpoint;
 import de.janbnz.url.service.ShorteningService;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Handler;
