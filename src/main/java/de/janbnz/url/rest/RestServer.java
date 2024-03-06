@@ -4,7 +4,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import de.janbnz.url.auth.AuthenticationProvider;
 import de.janbnz.url.auth.user.Role;
-import de.janbnz.url.database.SqlDatabase;
+import de.janbnz.url.database.Database;
 import de.janbnz.url.generator.AlphaNumericCodeGenerator;
 import de.janbnz.url.generator.ShortCodeGenerator;
 import de.janbnz.url.rest.endpoint.impl.AddressAPI;
@@ -25,7 +25,7 @@ public class RestServer {
     /**
      * Creates a new RestServer instance and starts the server.
      */
-    public RestServer(int port, SqlDatabase database, AuthenticationProvider authProvider) {
+    public RestServer(int port, Database database, AuthenticationProvider authProvider) {
         this.authProvider = authProvider;
 
         final ShortCodeGenerator codeGenerator = new ShortCodeGenerator(new AlphaNumericCodeGenerator());
