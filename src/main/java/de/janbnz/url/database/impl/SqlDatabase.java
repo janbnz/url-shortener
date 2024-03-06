@@ -1,23 +1,24 @@
-package de.janbnz.url.database;
+package de.janbnz.url.database.impl;
 
 import de.janbnz.url.auth.Encryption;
+import de.janbnz.url.database.Database;
 import de.janbnz.url.service.ShortenedURL;
 
 import java.sql.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class SqlDatabase extends Database {
 
     private Connection connection;
-    private final ExecutorService executorService;
 
     private final String url;
+    private final String username;
+    private final String password;
 
-    public SqlDatabase(String url) {
-        this.executorService = Executors.newFixedThreadPool(1);
+    public SqlDatabase(String url, String username, String password) {
         this.url = url;
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -25,7 +26,11 @@ public class SqlDatabase extends Database {
      */
     public void connect() {
         try {
-            connection = DriverManager.getConnection(url);
+            if (this.username.isEmpty() || this.password.isEmpty()) {
+                this.connection = DriverManager.getConnection(this.url);
+            } else {
+                this.connection = DriverManager.getConnection(this.url, this.username, this.password);
+            }
 
             // Create tables if not exists
             this.executeUpdate("CREATE TABLE IF NOT EXISTS urls(original_url varchar(150), shortened_url varchar(10), redirects int);").join();
@@ -154,7 +159,7 @@ public class SqlDatabase extends Database {
                 ex.printStackTrace();
             }
             return null;
-        }, executorService);
+        });
     }
 
     /**

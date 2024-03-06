@@ -1,6 +1,6 @@
 package de.janbnz.url.service;
 
-import de.janbnz.url.database.SqlDatabase;
+import de.janbnz.url.database.impl.SqlDatabase;
 
 public class AuthorizationService {
 

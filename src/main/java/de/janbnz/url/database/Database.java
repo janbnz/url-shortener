@@ -10,7 +10,7 @@ public abstract class Database {
     public abstract void connect();
 
     public abstract void disconnect();
-
+    
     public abstract CompletableFuture<Void> createURL(String originalURL, String shortenedURL);
 
     public abstract CompletableFuture<Void> createRedirect(String shortenedURL);
