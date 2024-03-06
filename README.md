@@ -45,15 +45,7 @@ http://localhost:8020/tQYC5b
 
 ## Future Features
 
-Some potential future features for this project could include implementing authorization.
-
-## Libraries
-
-This project uses the following libraries:
-
-- json
-- Javalin
-- SQLite
+Some potential future features for this project could include implementing authorization and a web frontend.
 
 ## License
 
