@@ -1,17 +1,30 @@
-<script>
+<script lang="ts">
 	import { Container, Row, Col, Input, Button, Icon, Alert } from '@sveltestrap/sveltestrap';
 	import NavBar from '../components/NavBar.svelte';
+	import { isLoggedIn } from '../stores/userStore';
+
+	var loginState: boolean;
+	isLoggedIn.subscribe((value) => (loginState = value));
 
 	let urlInputValue = '';
-	let isUrlEmpty = false;
+	let showError = false;
+	let errorMessage = '';
 
 	function submit() {
-		if (urlInputValue.trim() === '') {
-			isUrlEmpty = true;
-		} else {
-			isUrlEmpty = false;
-			// TODO: send url
+		if (!loginState) {
+			showError = true;
+			errorMessage = 'You need an account before you can create short urls';
+			return;
 		}
+
+		if (urlInputValue.trim() === '') {
+			showError = true;
+			errorMessage = 'Please specify a url';
+			return;
+		}
+
+		showError = false;
+		// TODO: send url
 	}
 </script>
 
@@ -27,11 +40,11 @@
 	<Row class="mt-4">
 		<Col>
 			<Alert
-				children="Please specify a url"
+				children={errorMessage}
 				color="danger"
 				dismissible={false}
 				fade={true}
-				isOpen={isUrlEmpty}
+				isOpen={showError}
 			/>
 		</Col>
 	</Row>
