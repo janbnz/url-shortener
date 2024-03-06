@@ -92,10 +92,15 @@ function getCookie(name: String) {
     return "";
 }
 
+function getToken() {
+    return token;
+}
+
 export default {
     login,
     register,
     loadToken,
     getCookie,
-    setCookie
+    setCookie,
+    getToken
 }

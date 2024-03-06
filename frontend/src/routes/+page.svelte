@@ -2,29 +2,45 @@
 	import { Container, Row, Col, Input, Button, Icon, Alert } from '@sveltestrap/sveltestrap';
 	import NavBar from '../components/NavBar.svelte';
 	import { isLoggedIn } from '../stores/userStore';
+	import { createUrl } from '../stores/urlStore';
 
 	var loginState: boolean;
 	isLoggedIn.subscribe((value) => (loginState = value));
 
 	let urlInputValue = '';
-	let showError = false;
-	let errorMessage = '';
+	let newURL = '';
+
+	let showAlert = false;
+	let alertType = 'danger';
+	let alertMessage = '';
 
 	function submit() {
 		if (!loginState) {
-			showError = true;
-			errorMessage = 'You need an account before you can create short urls';
+			showAlert = true;
+			alertMessage = 'You need an account before you can create short urls';
+			alertType = 'danger';
 			return;
 		}
 
 		if (urlInputValue.trim() === '') {
-			showError = true;
-			errorMessage = 'Please specify a url';
+			showAlert = true;
+			alertMessage = 'Please specify a url';
+			alertType = 'danger';
 			return;
 		}
 
-		showError = false;
-		// TODO: send url
+		createUrl(urlInputValue)
+			.then((statusText) => {
+				alertType = 'success';
+				alertMessage = 'URL created';
+				newURL = statusText;
+				showAlert = true;
+			})
+			.catch((error) => {
+				alertType = 'danger';
+				alertMessage = error;
+				showAlert = true;
+			});
 	}
 </script>
 
@@ -39,13 +55,13 @@
 
 	<Row class="mt-4">
 		<Col>
-			<Alert
-				children={errorMessage}
-				color="danger"
-				dismissible={false}
-				fade={true}
-				isOpen={showError}
-			/>
+			<Alert color={alertType} dismissible={false} fade={true} isOpen={showAlert}>
+				{#if alertType == 'success'}
+					<span>{alertMessage} <a target="_blank" href={newURL}>{newURL}</a></span>
+				{:else}
+					<span>{alertMessage}</span>
+				{/if}
+			</Alert>
 		</Col>
 	</Row>
 
