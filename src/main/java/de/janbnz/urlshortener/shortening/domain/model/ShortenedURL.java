@@ -2,9 +2,8 @@ package de.janbnz.urlshortener.shortening.domain.model;
 
 import de.janbnz.urlshortener.shortening.domain.code.impl.AlphaNumericCodeGenerator;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.UUID;
+import lombok.*;
 
 @Entity
 @AllArgsConstructor
@@ -15,8 +14,7 @@ public class ShortenedURL {
 
     private static final AlphaNumericCodeGenerator codeGenerator = new AlphaNumericCodeGenerator();
 
-    @Id
-    private String id;
+    @Id private String id;
 
     private String originalUrl;
     private int redirectCount;

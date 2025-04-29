@@ -4,12 +4,15 @@ import { goto } from '$app/navigation';
 export var isLoggedIn = writable(false);
 export var token = "";
 
-const BASE_URL = "http://localhost:8020"
+const BASE_URL = "http://localhost:8080"
 
 export function register(username: string, password: string): Promise<string> {
     return new Promise((resolve, reject) => {
         fetch(new Request(BASE_URL + "/api/auth/register", {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 "username": username,
                 "password": password
@@ -31,6 +34,9 @@ export function login(username: string, password: string): Promise<string> {
     return new Promise((resolve, reject) => {
         fetch(new Request(BASE_URL + "/api/auth/login", {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 "username": username,
                 "password": password

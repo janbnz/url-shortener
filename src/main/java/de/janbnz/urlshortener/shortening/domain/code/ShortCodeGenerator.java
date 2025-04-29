@@ -1,6 +1,5 @@
 package de.janbnz.urlshortener.shortening.domain.code;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

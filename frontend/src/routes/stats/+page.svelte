@@ -28,7 +28,7 @@
 			.then((response) => {
 				console.log(response);
 				alertType = 'success';
-				alertMessage = 'Shortened URL: ' + urlInputValue + "\nOriginal URL: " + response.original_url + "\nRedirects: " + response.redirects;
+				alertMessage = 'Shortened URL: ' + urlInputValue + "\nOriginal URL: " + response.originalUrl + "\nRedirects: " + response.redirectCount;
 				showAlert = true;
 			})
 			.catch((error) => {

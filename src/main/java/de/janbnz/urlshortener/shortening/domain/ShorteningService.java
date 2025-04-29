@@ -24,24 +24,28 @@ public class ShorteningService {
             throw new RuntimeException("Authorized subject not set");
         }
 
-        final ShortenedURL url = ShortenedURL.builder()
-                .redirectCount(0)
-                .originalUrl(originalUrl)
-                .userId(authorizedSubject.getId())
-                .build();
+        final ShortenedURL url =
+                ShortenedURL.builder()
+                        .redirectCount(0)
+                        .originalUrl(originalUrl)
+                        .userId(authorizedSubject.getId())
+                        .build();
 
         return shorteningRepository.save(url);
     }
 
     public ShortenedURL getInformation(String id) {
-        return shorteningRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find shortened URL"));
+        return shorteningRepository
+                .findById(id)
+                .orElseThrow(
+                        () ->
+                                new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find shortened URL"));
     }
 
     public ShortenedURL redirect(String id) {
         ShortenedURL url = getInformation(id);
 
-        return shorteningRepository.save(url.toBuilder()
-                .redirectCount(url.getRedirectCount() + 1)
-                .build());
+        return shorteningRepository.save(
+                url.toBuilder().redirectCount(url.getRedirectCount() + 1).build());
     }
 }
