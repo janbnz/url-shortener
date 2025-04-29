@@ -4,6 +4,8 @@ import de.janbnz.urlshortener.shortening.domain.code.impl.AlphaNumericCodeGenera
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,6 +20,8 @@ public class ShortenedURL {
 
     private String originalUrl;
     private int redirectCount;
+
+    private UUID userId;
 
     @PrePersist
     private void generateId() {
