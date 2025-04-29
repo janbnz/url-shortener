@@ -1,7 +1,7 @@
 package de.janbnz.urlshortener.auth.domain.user;
 
-import de.janbnz.urlshortener.auth.domain.user.model.Role;
 import de.janbnz.urlshortener.auth.domain.user.model.UserDto;
+import de.janbnz.urlshortener.auth.domain.user.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -21,7 +21,7 @@ public class UserService {
 
         user =
                 user.toBuilder()
-                        .role(Role.USER)
+                        .role(UserRole.USER)
                         .password(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()))
                         .build();
         return userRepository.save(user);

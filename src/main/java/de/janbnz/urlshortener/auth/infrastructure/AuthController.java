@@ -2,7 +2,7 @@ package de.janbnz.urlshortener.auth.infrastructure;
 
 import de.janbnz.urlshortener.auth.domain.auth.AuthService;
 import de.janbnz.urlshortener.auth.domain.user.UserService;
-import de.janbnz.urlshortener.auth.domain.user.model.RegisterRequest;
+import de.janbnz.urlshortener.auth.domain.user.model.AuthorizationRequest;
 import de.janbnz.urlshortener.auth.domain.user.model.UserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +16,13 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public UserDto register(@RequestBody RegisterRequest request) {
+    public UserDto register(@RequestBody AuthorizationRequest request) {
         return userService.registerUser(
                 UserDto.builder().username(request.username()).password(request.password()).build());
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody AuthorizationRequest request) {
+        return authService.login(request.username(), request.password());
     }
 }
