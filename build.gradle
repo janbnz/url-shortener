@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.7'
+    id('com.diffplug.spotless') version "7.0.2"
 }
 
 group = 'de.janbnz'
@@ -13,14 +14,55 @@ java {
     }
 }
 
+ext {
+    securityVersion = '6.4.4'
+    lombokVersion = '1.18.38'
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6"
+
+    // Database
+    implementation 'org.postgresql:postgresql:42.7.5'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.4.3'
+
+    // Security
+    implementation "org.springframework.boot:spring-boot-starter-security:3.4.4"
+    implementation "org.springframework.security:spring-security-core:${securityVersion}"
+    implementation "org.springframework.security:spring-security-oauth2-jose:${securityVersion}"
+    implementation "org.springframework.security:spring-security-oauth2-resource-server:${securityVersion}"
+
+    // Lombok
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // Testing
+    implementation("com.github.javafaker:javafaker:1.0.2")
+    implementation("org.yaml:snakeyaml:1.33")
+    testImplementation 'com.tngtech.archunit:archunit-junit5:1.4.0'
+
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test:${securityVersion}"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+spotless {
+    java {
+        importOrder()
+        removeUnusedImports()
+        googleJavaFormat("1.17.0")
+        trimTrailingWhitespace()
+        indentWithTabs(2)
+        indentWithSpaces(4)
+    }
 }
 
 tasks.named('test') {
