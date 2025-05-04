@@ -2,11 +2,12 @@ import { writable } from "svelte/store";
 import { goto } from '$app/navigation';
 import userStore from "./userStore";
 
-const BASE_URL = "http://localhost:8020"
+const BASE_URL = "http://localhost:8080"
 
 export function createUrl(originalURL: string): Promise<string> {
     const headers = new Headers({
-        'Authorization': `Bearer ${userStore.getToken()}`
+        'Authorization': `Bearer ${userStore.getToken()}`,
+          'Content-Type': 'application/json'
     });
 
     return new Promise((resolve, reject) => {
@@ -23,7 +24,7 @@ export function createUrl(originalURL: string): Promise<string> {
                 throw new Error(response.statusText);
             }
         }).then(data => {
-            resolve(BASE_URL + "/" + data.url);
+            resolve(BASE_URL + "/" + data.id);
         }).catch(error => {
             console.error("Error:", error);
             reject(error.message);
@@ -33,8 +34,13 @@ export function createUrl(originalURL: string): Promise<string> {
 
 export function getStats(shortenedURL: string): Promise<StatsResponse> {
     const headers = new Headers({
-        'Authorization': `Bearer ${userStore.getToken()}`
+          'Content-Type': 'application/json'
     });
+
+    const token = userStore.getToken();
+    if (token) {
+        headers.append('Authorization', `Bearer ${token}`);
+    }
 
     return new Promise((resolve, reject) => {
         fetch(new Request(BASE_URL + "/api/stats/" + shortenedURL, {
@@ -56,8 +62,8 @@ export function getStats(shortenedURL: string): Promise<StatsResponse> {
 }
 
 interface StatsResponse {
-    original_url: string;
-    redirects: number;
+    originalUrl: string;
+    redirectCount: number;
 }
 
 export default {
