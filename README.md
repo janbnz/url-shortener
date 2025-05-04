@@ -3,9 +3,7 @@
 
 ## Description
 
-This is a simple URL shortener project built in Java. It uses Javalin to handle REST requests. It stores information about URLs in a database.
-You can currently choose between SQLite, MySQL and MongoDB.
-
+This is a simple URL shortener project built in Spring Boot using a PostgreSQL database. 
 There is also a frontend that is made with [Svelte](https://github.com/sveltejs/svelte).
 
 ## Usage
