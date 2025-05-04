@@ -37,28 +37,30 @@ curl --location 'http://localhost:8080/api/create' \
 
 The response will look like this
 ```json
-{"url":"tQYC5b"}
+{
+    "id": "Xb1W8",
+    "originalUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "redirectCount": 0,
+    "userId": "bfc08eb7-b350-45b9-a31c-42cdd25de670"
+}
 ```
 
 ### Retrieving URL Information
 
 This command sends a GET request to the `/api/stats/{code}` endpoint, where `{code}` represents the short URL code. The server will return information about the URL, including the original URL and the number of redirects.
-Make sure to replace `tQYC5b` with the actual short URL code.
+Make sure to replace `Xb1W8` with the actual short URL code.
 ```bash
-curl --location 'http://localhost:8080/api/stats/tQYC5b'
+curl --location 'http://localhost:8080/api/stats/Xb1W8'
 ```
 
-The response will look like this
-```json
-{"original_url":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","redirects":0,"shortened_url":"tQYC5b"}
-```
+The response will have the same format as the response of the `/create` endpoint above.
 
 ### Accessing Shortened URLs
 
 Once a URL is shortened, you can access it using the shortened URL, for example:
 
 ```bash
-http://localhost:8080/tQYC5b
+http://localhost:8080/Xb1W8
 ```
 
 ## Frontend
