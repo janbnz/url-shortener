@@ -3,7 +3,7 @@
 
 ## Description
 
-This is a simple URL shortener project built in Spring Boot using a PostgreSQL database. 
+This is a simple URL shortener project built in Spring Boot using a PostgreSQL database.<br>
 There is also a frontend that is made with [Svelte](https://github.com/sveltejs/svelte).
 
 ## Usage
