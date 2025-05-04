@@ -1,8 +1,8 @@
 package de.janbnz.urlshortener.shortening.domain;
 
+import de.janbnz.urlshortener.auth.domain.SecurityService;
 import de.janbnz.urlshortener.auth.domain.auth.model.AuthorizedSubject;
 import de.janbnz.urlshortener.config.Role;
-import de.janbnz.urlshortener.config.SecurityConfig;
 import de.janbnz.urlshortener.shortening.domain.model.ShortenedURL;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +15,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class ShorteningService {
 
     private final ShorteningRepository shorteningRepository;
+    private final SecurityService securityService;
 
     @RolesAllowed(Role.USER)
     public ShortenedURL shorten(String originalUrl) {
-        final AuthorizedSubject authorizedSubject = SecurityConfig.getCurrentAuthorizedSubject();
+        final AuthorizedSubject authorizedSubject = securityService.getCurrentAuthorizedSubject();
 
         if (authorizedSubject == null) {
             throw new RuntimeException("Authorized subject not set");
